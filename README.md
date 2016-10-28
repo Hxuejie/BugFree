@@ -35,3 +35,29 @@ http://www.bugfree.org.cn
 6. ie6,7,8,9浏览器下载中文名称的附件，名字会是乱码
 7. 安装时，如果数据库名非法，不会给出任何出错信息
 8. 激活Bug下，自定义字段不可编辑
+ 
+Centos Nginx配置
+=======
+server {  
+	# nginx 端口  
+	listen 9090;  
+	# bugfree服务器IP  
+	server_name 192.168.10.211;  
+	location / {  
+		# 开户URL重写  
+		if (!-e $request_filename) {  
+			rewrite ^([_0-9a-zA-Z-]+)?(/wp-.*) $2 last;  
+			rewrite ^([_0-9a-zA-Z-]+)?(/.*.php)$ $2 last;  
+			rewrite ^ /bugfree/index.php last;  
+		}  
+		index index.html index.htm index.php;  
+	}  
+	# 支持PHP  
+	location ~ .php$ {  
+		root html;  
+		fastcgi_pass 127.0.0.1:9000;  
+		fastcgi_index index.php;  
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;   
+		include fastcgi_params;  
+	}  
+}
